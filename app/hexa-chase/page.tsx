@@ -1,27 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Gamepad2, Gift, Home, Send, ListTodo, Sparkles } from "lucide-react"
 import GamesPage from "@/components/games-page"
 import InvitePage from "@/components/invite-page"
 import RewardPage from "@/components/reward-page"
 import AdPlaceholder from "@/components/ad-placeholder"
-import HexPage from "@/components/HexPage"
 import ComingSoonCard from "@/components/coming-soon-card"
+import HexaChaseGame from "./components/HexaChaseGame"
 
 export default function LuxuryGameApp() {
   const [activeTab, setActiveTab] = useState("Hex")
-  const [showSplash, setShowSplash] = useState(true)
-
-  useEffect(() => {
-    // Show splash screen for 2 seconds
-    const timer = setTimeout(() => {
-      setShowSplash(false)
-    }, 2000)
-
-    return () => clearTimeout(timer)
-  }, [])
 
   const tabs = [
     { name: "Hex", icon: <Home className="h-5 w-5" /> },
@@ -30,49 +20,6 @@ export default function LuxuryGameApp() {
     { name: "Invite", icon: <Send className="h-5 w-5" /> },
     { name: "Reward", icon: <Gift className="h-5 w-5" /> },
   ]
-
-  if (showSplash) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-cosmic-bg">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="relative"
-        >
-          <div className="h-20 w-20 bg-gradient-to-br from-cosmic-accent to-cosmic-secondary rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(123,63,228,0.5)]">
-            <Sparkles className="h-10 w-10 text-white" />
-          </div>
-          <motion.div
-            className="absolute inset-0 rounded-2xl border-2 border-cosmic-highlight"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1.5 }}
-            transition={{
-              duration: 1.5,
-              repeat: Number.POSITIVE_INFINITY,
-              repeatType: "loop",
-            }}
-          />
-        </motion.div>
-        <motion.h1
-          className="mt-6 text-3xl font-bold text-white tracking-wider"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          Hex
-        </motion.h1>
-        <motion.div
-          className="mt-2 text-cosmic-muted text-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-        >
-          PREMIUM EXPERIENCE
-        </motion.div>
-      </div>
-    )
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-cosmic-bg text-white overflow-hidden">
@@ -126,9 +73,9 @@ export default function LuxuryGameApp() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="h-full overflow-y-auto pb-20"
+                className="h-full overflow-y-auto pb-20 flex justify-center items-center"
               >
-                <HexPage />
+                <HexaChaseGame />
               </motion.div>
             )}
             {activeTab === "Task" && (

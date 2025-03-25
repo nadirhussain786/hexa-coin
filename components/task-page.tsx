@@ -82,7 +82,7 @@ export default function TaskPage() {
     <div className="p-4 md:p-6 space-y-6 md:space-y-8 max-w-full overflow-x-hidden">
       <header className="mb-4 md:mb-6">
         <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-cosmic-accent to-cosmic-highlight bg-clip-text text-transparent">
-          Cosmic Tasks
+          Hex Tasks
         </h1>
         <p className="text-cosmic-muted">Complete tasks to earn exclusive rewards</p>
       </header>
