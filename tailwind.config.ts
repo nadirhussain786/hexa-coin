@@ -1,14 +1,14 @@
-/** @type {import('tailwindcss').Config} */
-import tailwindcssAnimate from "tailwindcss-animate"
-module.exports = {
+import type { Config } from "tailwindcss";
+
+const config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
-    "*.{js,ts,jsx,tsx,mdx}",
   ],
+  prefix: "",
   theme: {
     container: {
       center: true,
@@ -52,16 +52,6 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        cosmic: {
-          bg: "#0F0A1F",
-          card: "#1A1438",
-          accent: "#7B3FE4",
-          highlight: "#A45EFF",
-          secondary: "#FF4D8F",
-          tertiary: "#00D8FF",
-          text: "#FFFFFF",
-          muted: "#9CA3AF",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -70,12 +60,12 @@ module.exports = {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: 0 },
+          from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 },
+          to: { height: "0" },
         },
       },
       animation: {
@@ -84,5 +74,7 @@ module.exports = {
       },
     },
   },
-  plugins: [tailwindcssAnimate],
-}
+  plugins: [require("tailwindcss-animate")],
+} satisfies Config;
+
+export default config;
