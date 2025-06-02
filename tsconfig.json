@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
+    "allowJs": false,
     "target": "ES6",
     "skipLibCheck": true,
     "strict": true,

@@ -22,7 +22,7 @@ interface UserData {
 
 export default function HomePage(){
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false)
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const router = useRouter()
 

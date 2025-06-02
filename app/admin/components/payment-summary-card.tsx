@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Wallet, Clock, CheckCircle } from "lucide-react"
-import type { PaymentSummary } from "@/types"
+import type { DashboardStats } from "@/types"
 
 interface PaymentSummaryCardProps {
-  summary: PaymentSummary
+  summary: DashboardStats
 }
 
 export default function PaymentSummaryCard({ summary }: PaymentSummaryCardProps) {
