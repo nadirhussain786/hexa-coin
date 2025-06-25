@@ -1,68 +1,71 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { Wallet, ArrowLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import type { UserData } from "@/types"
-import LoadingSpinner from "@/app/components/LoadingSpinner"
-import AdPlaceholder from "@/app/hex/components/ad-placeholder"
-import HexaChaseGame from "@/app/hex/components/hexa-chase-game"
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { Wallet, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
+import HexaChaseGame from "@/app/hex/components/hexa-chase-game";
+import { TelegramUserFull } from "@/types";
 
 export default function HexChasePage() {
-  const [walletConnected, setWalletConnected] = useState<boolean>(false)
-  const [user, setUser] = useState<UserData | null>(null)
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const router = useRouter()
+  const [walletConnected, setWalletConnected] = useState<boolean>(false);
+  const [user, setUser] = useState<TelegramUserFull | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   // Check authentication and wallet status on component mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       // Check if user is logged in
-      const storedUser = localStorage.getItem("user")
+      const storedUser = localStorage.getItem("user");
       if (storedUser) {
         try {
-          const userData = JSON.parse(storedUser) as UserData
-          setUser(userData)
-          setIsLoggedIn(true)
+          const userData = JSON.parse(storedUser) as TelegramUserFull;
+          setUser(userData);
+          setIsLoggedIn(true);
 
           // Check if wallet is connected
-          const walletConnected = localStorage.getItem("walletConnected")
-          setWalletConnected(!!walletConnected)
-          setIsLoading(false)
+          const walletConnected = localStorage.getItem("walletConnected");
+          setWalletConnected(!!walletConnected);
+          setIsLoading(false);
         } catch (err: unknown) {
           // Invalid stored data, clear it
-          console.error("Error parsing user data:", err instanceof Error ? err.message : String(err))
-          localStorage.removeItem("user")
-          localStorage.removeItem("walletConnected")
-          document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+          console.error(
+            "Error parsing user data:",
+            err instanceof Error ? err.message : String(err)
+          );
+          localStorage.removeItem("user");
+          localStorage.removeItem("walletConnected");
+          document.cookie =
+            "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           // Redirect to home if not authenticated
-          router.push("/")
+          router.push("/");
         }
       } else {
         // Redirect to home if not authenticated
-        setIsLoading(false)
-        router.push("/")
+        setIsLoading(false);
+        router.push("/");
       }
     }
-  }, [router])
+  }, [router]);
 
   const connectWallet = (): void => {
     // Simulate wallet connection
-    setWalletConnected(true)
+    setWalletConnected(true);
     if (typeof window !== "undefined") {
-      localStorage.setItem("walletConnected", "true")
+      localStorage.setItem("walletConnected", "true");
     }
-  }
+  };
 
   const goBack = (): void => {
-    router.push("/hex")
-  }
+    router.push("/hex");
+  };
 
   if (isLoading) {
-    return <LoadingSpinner />
+    return <LoadingSpinner />;
   }
 
   return (
@@ -98,27 +101,19 @@ export default function HexChasePage() {
           {isLoggedIn && user && (
             <div className="flex items-center space-x-3">
               <div className="flex items-center bg-cosmic-card/50 px-3 py-1 rounded-full border border-cosmic-accent/30 shadow-inner shadow-cosmic-accent/10">
-                <span className="text-cosmic-accent font-medium mr-1">{user.hxcoBalance || 0}</span>
+                <span className="text-cosmic-accent font-medium mr-1">
+                  {/* {user.user_balance.balance_hxco || 0} */}
+                </span>
                 <span className="text-xs text-cosmic-muted">HXCO</span>
               </div>
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cosmic-accent to-cosmic-secondary flex items-center justify-center text-cosmic-text font-bold">
-                {user.name?.charAt(0) || "U"}
+                {user.user.username?.charAt(0) || "U"}
               </div>
             </div>
           )}
         </div>
       </header>
-
-      {/* Main content with ads */}
       <div className="flex flex-1 w-full max-w-[1800px] mx-auto relative z-10">
-        {/* Left ad space - responsive on all screens */}
-        <div className="hidden sm:block w-[120px] lg:w-[160px] xl:w-[300px] flex-shrink-0 p-2">
-          <div className="sticky top-4">
-            <AdPlaceholder width="100%" height="600px" text="Ad Space (Left)" className="hidden sm:flex" />
-          </div>
-        </div>
-
-        {/* Main content area */}
         <main className="flex-1 overflow-hidden min-w-0 max-w-full py-8 px-4">
           {isLoggedIn && !walletConnected ? (
             <Card className="max-w-md mx-auto p-8 border border-cosmic-accent/30 bg-cosmic-card/50 backdrop-blur-md shadow-2xl">
@@ -129,7 +124,9 @@ export default function HexChasePage() {
                 <h2 className="text-xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-cosmic-accent to-cosmic-highlight">
                   Connect Your Wallet
                 </h2>
-                <p className="text-cosmic-muted mb-6">Connect your TON wallet to start playing and winning rewards</p>
+                <p className="text-cosmic-muted mb-6">
+                  Connect your TON wallet to start playing and winning rewards
+                </p>
                 <Button
                   onClick={connectWallet}
                   className="bg-gradient-to-r from-cosmic-accent to-cosmic-highlight hover:from-cosmic-accent hover:to-cosmic-highlight text-cosmic-text shadow-xl transition-all duration-300 hover:shadow-cosmic-accent/30 hover:shadow-2xl"
@@ -146,19 +143,7 @@ export default function HexChasePage() {
             </div>
           )}
         </main>
-
-        {/* Right ad space - responsive on all screens */}
-        <div className="hidden sm:block w-[120px] lg:w-[160px] xl:w-[300px] flex-shrink-0 p-2">
-          <div className="sticky top-4">
-            <AdPlaceholder width="100%" height="600px" text="Ad Space (Right)" className="hidden sm:flex" />
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom ad space - visible on all screens */}
-      <div className="w-full p-2 bg-cosmic-card/30 border-t border-cosmic-accent/10">
-        <AdPlaceholder width="100%" height="90px" text="Ad Space (Bottom)" className="flex" />
       </div>
     </div>
-  )
+  );
 }
