@@ -1,45 +1,42 @@
-"use client"
+"use client";
 
-import { Suspense } from "react"
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Gamepad2, Gift, Home, Send, ListTodo, Sparkles } from "lucide-react"
-import { Tab } from "@/types"
-import { useRouter } from "next/navigation"
-import LoadingSpinner from "@/app/components/LoadingSpinner"
-import AdPlaceholder from "./ad-placeholder"
-import HexChaseCard from "./hex-chase-card"
-import ComingSoonCard from "./coming-soon-card"
-import GamesPage from "./games-page"
-import RewardPage from "./reward-page"
-import InvitePage from "./invite-page"
-import ProfileModal from "./ProfileModal"
+import { Suspense } from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Gamepad2, Gift, Home, Send, ListTodo, Sparkles } from "lucide-react";
+import { Tab } from "@/types";
+import { useRouter } from "next/navigation";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
+import HexChaseCard from "./hex-chase-card";
+import ComingSoonCard from "./coming-soon-card";
+import GamesPage from "./games-page";
+import RewardPage from "./reward-page";
+import InvitePage from "./invite-page";
+import ProfileModal from "./ProfileModal";
 
 interface UserData {
-  id: string
-  name: string
-  email: string
-  hxcoBalance: number
-  ptsBalance: number
-  tonBalance: number
-  referrals: number
-  role: string
-  avatar: string | null
+  id: string;
+  name: string;
+  email: string;
+  hxcoBalance: number;
+  ptsBalance: number;
+  tonBalance: number;
+  referrals: number;
+  role: string;
+  avatar: string | null;
 }
 
 export function HexDashboardComponent() {
-  const [activeTab, setActiveTab] = useState<string>("Hex")
-  const router = useRouter()
+  const [activeTab, setActiveTab] = useState<string>("Hex");
+  const router = useRouter();
 
-  // Auth state
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false)
-  const [user, setUser] = useState<UserData | null>(null)
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [user, setUser] = useState<UserData | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Live HXCO earnings animation
-  const [hxcoEarnings, setHxcoEarnings] = useState<number>(0)
-  const [isEarningAnimating, setIsEarningAnimating] = useState<boolean>(false)
+  const [hxcoEarnings, setHxcoEarnings] = useState<number>(0);
+  const [isEarningAnimating, setIsEarningAnimating] = useState<boolean>(false);
 
   const tabs: Tab[] = [
     { name: "Hex", icon: <Home className="h-5 w-5" /> },
@@ -47,32 +44,33 @@ export function HexDashboardComponent() {
     { name: "Games", icon: <Gamepad2 className="h-5 w-5" /> },
     { name: "Invite", icon: <Send className="h-5 w-5" /> },
     { name: "Reward", icon: <Gift className="h-5 w-5" /> },
-  ]
+  ];
 
   // Check if user is logged in on component mount
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("user")
+      const storedUser = localStorage.getItem("user");
       if (storedUser) {
         try {
-          const userData = JSON.parse(storedUser) as UserData
-          setUser(userData)
-          setIsLoggedIn(true)
-          setHxcoEarnings(userData.hxcoBalance || 0)
-          setIsLoading(false)
+          const userData = JSON.parse(storedUser) as UserData;
+          setUser(userData);
+          setIsLoggedIn(true);
+          setHxcoEarnings(userData.hxcoBalance || 0);
+          setIsLoading(false);
         } catch (_error) {
           // Invalid stored data, clear it
-          localStorage.removeItem("user")
-          document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+          localStorage.removeItem("user");
+          document.cookie =
+            "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           // Redirect to home if not authenticated
-          router.push("/")
+          router.push("/");
         }
       } else {
         // Redirect to home if not authenticated
-        router.push("/")
+        router.push("/");
       }
     }
-  }, [router])
+  }, [router]);
 
   // Simulate earning HXCO tokens randomly
   useEffect(() => {
@@ -80,83 +78,45 @@ export function HexDashboardComponent() {
       const earnInterval = setInterval(() => {
         // 10% chance to earn HXCO every 30 seconds
         if (Math.random() < 0.1) {
-          const amount = Math.floor(Math.random() * 5) + 1 // Earn 1-5 HXCO
-          setHxcoEarnings((prev) => prev + amount)
-          setIsEarningAnimating(true)
+          const amount = Math.floor(Math.random() * 5) + 1; // Earn 1-5 HXCO
+          setHxcoEarnings((prev) => prev + amount);
+          setIsEarningAnimating(true);
 
           // Update user data with new earnings
           setUser((prev) => {
-            if (!prev) return null
+            if (!prev) return null;
             return {
               ...prev,
               hxcoBalance: (prev.hxcoBalance || 0) + amount,
-            }
-          })
+            };
+          });
 
           // Reset animation after 2 seconds
           setTimeout(() => {
-            setIsEarningAnimating(false)
-          }, 2000)
+            setIsEarningAnimating(false);
+          }, 2000);
         }
-      }, 30000) // Check every 30 seconds
+      }, 30000); // Check every 30 seconds
 
-      return () => clearInterval(earnInterval)
+      return () => clearInterval(earnInterval);
     }
-  }, [isLoggedIn])
+  }, [isLoggedIn]);
 
   const handleTabChange = (tabName: string) => {
-    setActiveTab(tabName)
-  }
+    setActiveTab(tabName);
+  };
 
   const handleUpdateUser = (userData: UserData) => {
-    setUser(userData)
-  }
-
-  // Handle logout
-  const handleLogout = () => {
-    setUser(null)
-    setIsLoggedIn(false)
-    setIsProfileModalOpen(false)
-
-    // Clear user data from localStorage
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("user")
-      localStorage.removeItem("walletConnected")
-
-      // Also clear the cookie
-      document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
-    }
-
-    // Redirect to home page after logout
-    router.push("/")
-  }
-
-  // Handle delete account
-  const handleDeleteAccount = () => {
-    setUser(null)
-    setIsLoggedIn(false)
-    setIsProfileModalOpen(false)
-
-    // Clear user data from localStorage
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("user")
-      localStorage.removeItem("walletConnected")
-
-      // Also clear the cookie
-      document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
-    }
-
-    // Redirect to home page after account deletion
-    router.push("/")
-  }
+    setUser(userData);
+  };
 
   // Handle play game button click
   const handlePlayGame = () => {
-    router.push("/hex-chase")
-  }
+    router.push("/hex-chase");
+  };
 
   if (isLoading) {
-    return <LoadingSpinner />
+    return <LoadingSpinner />;
   }
 
   return (
@@ -193,7 +153,9 @@ export function HexDashboardComponent() {
               </div> */}
 
               <div className="flex items-center bg-cosmic-card/50 px-3 py-1 rounded-full border border-cosmic-accent/30 shadow-inner shadow-cosmic-accent/10 relative overflow-hidden">
-                <span className={`text-cosmic-accent font-medium mr-1 ${isEarningAnimating ? "animate-pulse" : ""}`}>
+                <span
+                  className={`text-cosmic-accent font-medium mr-1 ${isEarningAnimating ? "animate-pulse" : ""}`}
+                >
                   {user?.hxcoBalance || 0}
                 </span>
                 <span className="text-xs text-cosmic-muted">HXCO</span>
@@ -202,16 +164,14 @@ export function HexDashboardComponent() {
                 {isEarningAnimating && (
                   <div className="absolute inset-0 bg-cosmic-accent/10 flex items-center justify-center">
                     <span className="text-cosmic-accent text-xs font-bold animate-bounce">
-                      +{hxcoEarnings - ((user?.hxcoBalance || 0) - hxcoEarnings)}
+                      +
+                      {hxcoEarnings - ((user?.hxcoBalance || 0) - hxcoEarnings)}
                     </span>
                   </div>
                 )}
               </div>
 
-              <button
-                onClick={() => setIsProfileModalOpen(true)}
-                className="w-8 h-8 rounded-full bg-gradient-to-br from-cosmic-accent to-cosmic-secondary flex items-center justify-center text-cosmic-text font-bold shadow-lg shadow-cosmic-accent/20 hover:shadow-cosmic-accent/40 transition-shadow"
-              >
+              <button className="w-8 h-8 rounded-full bg-gradient-to-br from-cosmic-accent to-cosmic-secondary flex items-center justify-center text-cosmic-text font-bold shadow-lg shadow-cosmic-accent/20 hover:shadow-cosmic-accent/40 transition-shadow">
                 {user?.name?.charAt(0) || "U"}
               </button>
             </div>
@@ -221,13 +181,6 @@ export function HexDashboardComponent() {
 
       {/* Main content with ads */}
       <div className="flex flex-1 w-full max-w-[1800px] mx-auto relative z-10">
-        {/* Left ad space - responsive on all screens */}
-        <div className="hidden sm:block w-[120px] lg:w-[160px] xl:w-[300px] flex-shrink-0 p-2">
-          <div className="sticky top-4">
-            <AdPlaceholder width="100%" height="600px" text="Ad Space (Left)" className="hidden sm:flex" />
-          </div>
-        </div>
-
         {/* Main content area */}
         <main className="flex-1 overflow-hidden min-w-0 max-w-full">
           <AnimatePresence mode="wait">
@@ -241,7 +194,7 @@ export function HexDashboardComponent() {
                 className="h-full overflow-y-auto pb-20 flex justify-center items-center"
               >
                 <div className="max-w-md w-full">
-                  <HexChaseCard onPlayClick={handlePlayGame} />
+                  <HexChaseCard />
                 </div>
               </motion.div>
             )}
@@ -295,18 +248,6 @@ export function HexDashboardComponent() {
             )}
           </AnimatePresence>
         </main>
-
-        {/* Right ad space - responsive on all screens */}
-        <div className="hidden sm:block w-[120px] lg:w-[160px] xl:w-[300px] flex-shrink-0 p-2">
-          <div className="sticky top-4">
-            <AdPlaceholder width="100%" height="600px" text="Ad Space (Right)" className="hidden sm:flex" />
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom ad space - visible on all screens but responsive */}
-      <div className="w-full p-2 bg-cosmic-card/30 border-t border-cosmic-accent/10 mb-16">
-        <AdPlaceholder width="100%" height="90px" text="Ad Space (Bottom)" className="flex" />
       </div>
 
       {/* Bottom navigation */}
@@ -320,15 +261,25 @@ export function HexDashboardComponent() {
                   onClick={() => handleTabChange(tab.name)}
                   className={`flex flex-col items-center justify-center w-full h-full transition-all duration-300 relative`}
                 >
-                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="relative">
-                    <div className={`${activeTab === tab.name ? "text-cosmic-highlight" : "text-cosmic-muted"}`}>
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="relative"
+                  >
+                    <div
+                      className={`${activeTab === tab.name ? "text-cosmic-highlight" : "text-cosmic-muted"}`}
+                    >
                       {tab.icon}
                     </div>
                     {activeTab === tab.name && (
                       <motion.div
                         layoutId="activeTabIndicator"
                         className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-cosmic-highlight rounded-full shadow-[0_0_8px_rgba(164,94,255,0.9)]"
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 30,
+                        }}
                       />
                     )}
                   </motion.div>
@@ -341,7 +292,11 @@ export function HexDashboardComponent() {
                     <motion.div
                       layoutId="tabBackground"
                       className="absolute inset-0 bg-gradient-to-b from-cosmic-accent/20 to-cosmic-accent/5 rounded-xl -z-10"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
                     />
                   )}
                 </button>
@@ -350,18 +305,6 @@ export function HexDashboardComponent() {
           </div>
         </div>
       </nav>
-
-      {/* Profile Modal */}
-      {user && (
-        <ProfileModal
-          isOpen={isProfileModalOpen}
-          onClose={() => setIsProfileModalOpen(false)}
-          userData={user}
-          onUpdate={handleUpdateUser}
-          onLogout={handleLogout}
-          onDelete={handleDeleteAccount}
-        />
-      )}
     </div>
-  )
+  );
 }

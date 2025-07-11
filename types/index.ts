@@ -1,11 +1,65 @@
 import { UserStatus, WithdrawalStatus } from "@/constants";
 import type React from "react";
-// Common types used across components
+
+export type TelegramUserBase = {
+  id: number;
+  username: string;
+  first_name: string;
+  last_name: string;
+  avatar_url?: string;
+};
 
 export enum Role {
   User = "user",
   Admin = "admin",
 }
+
+export type TelegramUserInput = {
+  telegram_id: number;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
+};
+
+export interface HexPermission {
+  id: string;
+  user_id: string;
+  daily_limit: number;
+  ad_required: number;
+  ton_cost: number;
+  is_banned: boolean;
+  updated_at: string;
+  created_at: string;
+}
+
+export interface UserBalance {
+  id: string;
+  user_id: string;
+  balance_hxco: number;
+  balance_ton: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export type TgUser = {
+  id: string;
+  telegram_id: number;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
+  registered_at: string;
+  created_at: string;
+  status: string;
+  role: string;
+};
+export interface TelegramUserFull {
+  user: TgUser;
+  hex_permission: HexPermission;
+  user_balance: UserBalance;
+}
+
 // Game types
 export interface Game {
   id: number;

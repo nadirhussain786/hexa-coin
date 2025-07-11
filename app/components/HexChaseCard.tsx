@@ -1,10 +1,17 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Wallet } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Wallet } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,87 +19,85 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
-import HexChaseGameImage from "./HexChaseGameImage"
-import AuthModal from "./AuthModal"
+} from "@/components/ui/dialog";
+import HexChaseGameImage from "./HexChaseGameImage";
+import AuthModal from "./AuthModal";
+import { Routes } from "@/lib/routes";
 
 interface UserData {
-    id: string
-    name: string
-    email: string
-    hxcoBalance: number
-    ptsBalance: number
-    tonBalance: number
-    referrals: number
-    role: string
-    avatar: string | null
-  }
+  id: string;
+  name: string;
+  email: string;
+  hxcoBalance: number;
+  ptsBalance: number;
+  tonBalance: number;
+  referrals: number;
+  role: string;
+  avatar: string | null;
+}
 
 interface HexChaseCardProps {
-  onPlayClick?: () => void
+  onPlayClick?: () => void;
 }
 
 export default function HexChaseCard({ onPlayClick }: HexChaseCardProps) {
-  const router = useRouter()
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false)
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false)
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
-  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
+  const router = useRouter();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
 
-  // Check authentication status on component mount
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("user")
-      setIsLoggedIn(!!storedUser)
-
-      // Check if wallet is connected
-      const walletConnected = localStorage.getItem("walletConnected")
-      setIsWalletConnected(!!walletConnected)
+      const storedUser = localStorage.getItem("user");
+      setIsLoggedIn(!!storedUser);
+      const walletConnected = localStorage.getItem("walletConnected");
+      setIsWalletConnected(!!walletConnected);
     }
-  }, [])
+  }, []);
 
   const handlePlayNowClick = () => {
     if (!isLoggedIn) {
       // Step 1: If not logged in, show auth modal
-      setIsAuthModalOpen(true)
+      setIsAuthModalOpen(true);
     } else if (onPlayClick) {
       // If we have an onPlayClick handler (on the dashboard), use it
-      onPlayClick()
+      onPlayClick();
     } else if (!isWalletConnected) {
       // Step 2: If logged in but wallet not connected, show wallet modal
-      setIsWalletModalOpen(true)
+      setIsWalletModalOpen(true);
     } else {
       // Step 3: If logged in and wallet connected, navigate to game
-      router.push("/hex-chase")
+      router.push(Routes.HaseChaseGame);
     }
-  }
+  };
 
   const handleAuthSuccess = (userData: UserData) => {
     // Store user data in localStorage
     if (typeof window !== "undefined") {
-      localStorage.setItem("user", JSON.stringify(userData))
-      document.cookie = `user=${JSON.stringify(userData)}; path=/; max-age=2592000` // 30 days
+      localStorage.setItem("user", JSON.stringify(userData));
+      document.cookie = `user=${JSON.stringify(userData)}; path=/; max-age=2592000`; // 30 days
     }
 
-    setIsLoggedIn(true)
-    setIsAuthModalOpen(false)
+    setIsLoggedIn(true);
+    setIsAuthModalOpen(false);
 
     // Redirect to hex dashboard after login
-    router.push("/hex")
-  }
+    router.push("/");
+  };
 
   const handleConnectWallet = () => {
     // Simulate wallet connection
     if (typeof window !== "undefined") {
-      localStorage.setItem("walletConnected", "true")
+      localStorage.setItem("walletConnected", "true");
     }
 
-    setIsWalletConnected(true)
-    setIsWalletModalOpen(false)
+    setIsWalletConnected(true);
+    setIsWalletModalOpen(false);
 
     // Navigate to hex-chase game after wallet connection
-    router.push("/hex-chase")
-  }
+    router.push(Routes.HaseChaseGame);
+  };
 
   return (
     <>
@@ -117,16 +122,20 @@ export default function HexChaseCard({ onPlayClick }: HexChaseCardProps) {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-cosmic-muted mb-4">
-              Connect your wallet to start playing and earn TON and HXCO tokens. Open hexagons by watching ads or paying
-              with TON.
+              Connect your wallet to start playing and earn TON and HXCO tokens.
+              Open hexagons by watching ads or paying with TON.
             </p>
             <div className="flex items-center justify-between text-sm mb-2">
               <span className="text-cosmic-muted">Rewards:</span>
-              <span className="text-cosmic-accent font-medium">Up to 50 HXCO</span>
+              <span className="text-cosmic-accent font-medium">
+                Up to 50 HXCO
+              </span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-cosmic-muted">Cost:</span>
-              <span className="text-cosmic-tertiary font-medium">0.2 TON or Watch Ads</span>
+              <span className="text-cosmic-tertiary font-medium">
+                0.2 TON or Watch Ads
+              </span>
             </div>
           </CardContent>
           <CardFooter>
@@ -141,7 +150,11 @@ export default function HexChaseCard({ onPlayClick }: HexChaseCardProps) {
       </div>
 
       {/* Auth Modal */}
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} onSuccess={handleAuthSuccess} />
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={handleAuthSuccess}
+      />
 
       {/* Wallet Connection Modal */}
       <Dialog open={isWalletModalOpen} onOpenChange={setIsWalletModalOpen}>
@@ -160,8 +173,9 @@ export default function HexChaseCard({ onPlayClick }: HexChaseCardProps) {
               <Wallet className="w-10 h-10 text-cosmic-text" />
             </div>
             <p className="text-cosmic-muted text-center mb-6">
-              You need to connect your TON wallet to play Hex Chase and earn rewards. Your wallet will be used for
-              transactions and to store your earnings.
+              You need to connect your TON wallet to play Hex Chase and earn
+              rewards. Your wallet will be used for transactions and to store
+              your earnings.
             </p>
           </div>
 
@@ -176,5 +190,5 @@ export default function HexChaseCard({ onPlayClick }: HexChaseCardProps) {
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }
