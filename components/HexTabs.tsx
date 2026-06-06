@@ -13,7 +13,7 @@ const HexTabs: React.FC<HexTabsProps> = ({ tabs, activeTab, onTabChange }) => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-20">
       <div className="mx-auto max-w-md">
-        <div className="mx-4 mb-4 bg-cosmic-card/80 backdrop-blur-xl border border-cosmic-accent/20 rounded-2xl overflow-hidden shadow-[0_0_25px_rgba(123,63,228,0.25)]">
+        <div className="mx-4 mb-4 bg-cosmic-card/80 backdrop-blur-xl border border-cosmic-border/60 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(124,58,237,0.2),0_4px_20px_rgba(0,0,0,0.4)]">
           <div className="flex justify-around items-center h-16 px-2">
             {tabs.map((tab) => (
               <button

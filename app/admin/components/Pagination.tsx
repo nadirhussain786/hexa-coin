@@ -22,7 +22,7 @@ export function Pagination({ currentPage, totalPages, setCurrentPage, totalItems
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
           className="border-cosmic-accent/20 text-cosmic-muted"
         >
@@ -34,7 +34,7 @@ export function Pagination({ currentPage, totalPages, setCurrentPage, totalItems
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+          onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
           className="border-cosmic-accent/20 text-cosmic-muted"
         >

@@ -1,44 +1,50 @@
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
+"use client";
+
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { Tv2, Loader2 } from "lucide-react";
 
 interface AdDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  adLoading: boolean
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  adLoading: boolean;
 }
 
 export function AdDialog({ open, onOpenChange, adLoading }: AdDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="shadow-xl max-w-sm mx-auto bg-cosmic-card border-cosmic-accent/20">
-        <div className="flex flex-col items-center justify-center py-6">
+      <DialogContent className="shadow-2xl max-w-sm mx-auto bg-gradient-to-br from-[#1A1438] to-[#0F0A1F] border border-white/10">
+        <div className="flex flex-col items-center justify-center py-8 gap-5">
           {adLoading ? (
             <>
-              <div className="w-20 h-20 rounded-full bg-gradient-to-r from-cosmic-accent to-cosmic-highlight flex items-center justify-center mb-6 animate-pulse">
-                <span className="text-2xl font-bold text-cosmic-text">Ad</span>
+              <div className="w-16 h-16 rounded-2xl bg-cosmic-accent/20 flex items-center justify-center">
+                <Loader2 className="h-7 w-7 text-cosmic-accent animate-spin" />
               </div>
-              <DialogTitle className="text-xl text-center mb-2">Loading Advertisement...</DialogTitle>
-              <DialogDescription className="text-cosmic-muted text-center max-w-xs">
-                Please wait while we load your advertisement.
-              </DialogDescription>
+              <div className="text-center">
+                <DialogTitle className="text-base font-semibold text-cosmic-text">Loading Ad...</DialogTitle>
+                <DialogDescription className="text-xs text-cosmic-muted mt-1">Just a moment</DialogDescription>
+              </div>
             </>
           ) : (
             <>
-              <div className="w-full h-40 bg-cosmic-bg rounded-lg flex items-center justify-center mb-6">
-                <div className="text-center">
-                  <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cosmic-accent to-cosmic-highlight">
-                    Advertisement
-                  </span>
-                  <p className="text-cosmic-muted mt-2">This is a simulated advertisement</p>
+              <div className="w-full h-44 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center relative overflow-hidden">
+                {/* Simulated ad content */}
+                <div className="absolute inset-0 bg-gradient-to-br from-cosmic-accent/20 to-cosmic-secondary/20" />
+                <div className="relative text-center px-4">
+                  <Tv2 className="h-10 w-10 text-cosmic-accent mx-auto mb-2 opacity-60" />
+                  <p className="text-xs text-cosmic-muted">Advertisement</p>
+                  <p className="text-[10px] text-cosmic-muted/60 mt-1">Ad closes automatically</p>
                 </div>
               </div>
-              <DialogDescription className="text-cosmic-muted text-center max-w-xs">
-                Watch this ad to earn progress toward opening a hexagon. You need to watch 10 ads to open one hexagon
-                for free.
-              </DialogDescription>
+              <div className="text-center">
+                <DialogTitle className="text-sm font-semibold text-cosmic-text">Watching Ad...</DialogTitle>
+                <DialogDescription className="text-xs text-cosmic-muted mt-1">
+                  Watch to earn progress toward a free hex open
+                </DialogDescription>
+              </div>
             </>
           )}
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

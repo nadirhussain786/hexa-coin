@@ -67,6 +67,21 @@ export async function getDashboardStats(): Promise<DashboardStatsResponse> {
     }
   }
 
+  // HXCO distributed via game sessions
+  const { data: hxcoData } = await supabase
+    .from("game_sessions")
+    .select("reward_value")
+    .eq("reward_type", "HXCO");
+  const totalHxcoDistributed = hxcoData?.reduce((s, r) => s + Number(r.reward_value), 0) ?? 0;
+
+  // Hex opens today
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const { count: hexOpensToday } = await supabase
+    .from("game_sessions")
+    .select("*", { count: "exact", head: true })
+    .gte("opened_at", todayStart.toISOString());
+
   return {
     success: true,
     data: {
@@ -75,6 +90,8 @@ export async function getDashboardStats(): Promise<DashboardStatsResponse> {
       totalWithdrawals,
       pendingWithdrawals,
       completedWithdrawals,
+      totalHxcoDistributed,
+      hexOpensToday: hexOpensToday ?? 0,
     },
   }
 }

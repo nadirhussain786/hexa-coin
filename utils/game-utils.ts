@@ -1,5 +1,5 @@
 import { luxuryGradients, rewardTypes } from "@/constants/game-constants";
-import { Hexagon, HexPosition, HexReward } from "@/types/game-types";
+import { Hexagon, HexPosition, HexReward } from "@/types";
 
 // Generate a random reward based on probabilities
 export const generateReward = (): HexReward => {

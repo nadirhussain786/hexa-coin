@@ -33,9 +33,9 @@ export default function WithdrawalManagement({ withdrawal }: Props) {
 
   const filteredWithdrawals = withdrawals.filter((withdrawal) => {
     const matchesSearch =
-      withdrawal.users.first_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      withdrawal.users?.first_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       "" ||
-      withdrawal.users.last_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      withdrawal.users?.last_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       "" ||
       withdrawal.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ""

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import type { Game } from "@/types";
-import HexChaseGameImage from "@/app/components/HexChaseGameImage";
+import { Hexagon } from "lucide-react";
 
 export default function GamesPage() {
   const router = useRouter();
@@ -68,8 +68,8 @@ export default function GamesPage() {
             key={game.id}
             className="overflow-hidden border border-cosmic-accent/20 bg-cosmic-card/50 backdrop-blur-sm"
           >
-            <div className="aspect-video w-full overflow-hidden">
-              <HexChaseGameImage />
+            <div className="aspect-video w-full overflow-hidden bg-gradient-to-br from-cosmic-accent/20 to-cosmic-highlight/10 flex items-center justify-center">
+              <Hexagon className="h-16 w-16 text-cosmic-accent/60" />
             </div>
             <CardHeader className="px-4 sm:px-6 pb-2 sm:pb-4">
               <div className="flex justify-between items-center">

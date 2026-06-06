@@ -9,6 +9,13 @@ import {
 import { TelegramUserInput } from "@/types";
 import { createClient } from "@/utils/supabase/server";
 
+function generateReferralCode(telegramId: number): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const base = telegramId.toString(36).toUpperCase().slice(-4);
+  const suffix = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  return `HX${base}${suffix}`;
+}
+
 export async function addOrGetTelegramUser(input: TelegramUserInput) {
   const supabase = await createClient();
 
@@ -34,6 +41,7 @@ export async function addOrGetTelegramUser(input: TelegramUserInput) {
           avatar_url: input.avatar_url,
           status: UserStatus.Active,
           role: UserRole.User,
+          referral_code: generateReferralCode(input.telegram_id),
         })
         .select()
         .single();
