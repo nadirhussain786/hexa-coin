@@ -10,6 +10,7 @@ import {
   Settings,
   Box,
   ListTodo,
+  Gamepad2,
 } from "lucide-react";
 import type { DashboardStats, HexPermission, User, Withdrawal } from "@/types";
 import AdminLogin from "./admin-login";
@@ -19,6 +20,7 @@ import AdminHeader from "./AdminHeader";
 import HexPermissionsManager from "./HexPermission/HexPermissionsManager";
 import WithdrawalManagement from "./Withdrawals/WithdrawalManagement";
 import TaskManagement from "./TaskManagement";
+import MiniGameStats from "./MiniGameStats";
 
 interface AdminData {
   id: string;
@@ -130,6 +132,13 @@ export default function AdminDashboard({
               Tasks
             </TabsTrigger>
             <TabsTrigger
+              value="mini-games"
+              className="data-[state=active]:bg-cosmic-accent/20 data-[state=active]:text-white"
+            >
+              <Gamepad2 className="h-4 w-4 mr-2" />
+              Mini Games
+            </TabsTrigger>
+            <TabsTrigger
               value="settings"
               className="data-[state=active]:bg-cosmic-accent/20 data-[state=active]:text-white"
             >
@@ -165,6 +174,10 @@ export default function AdminDashboard({
 
           <TabsContent value="tasks">
             <TaskManagement />
+          </TabsContent>
+
+          <TabsContent value="mini-games">
+            <MiniGameStats />
           </TabsContent>
 
           <TabsContent value="settings">
