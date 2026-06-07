@@ -41,7 +41,7 @@ export function HexPermissionsTable({
   // Filter permissions based on search query and filter
   const filteredPermissions = permissions.filter((permission) => {
     const matchesSearch =
-      permission.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (permission.name ?? "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       permission.user_id.toLowerCase().includes(searchQuery.toLowerCase())
 
     const matchesFilter =

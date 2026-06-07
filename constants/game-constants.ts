@@ -1,4 +1,4 @@
-import type { RewardType } from "@/types/game-types"
+import type { RewardType } from "@/types"
 
 export const luxuryGradients: [string, string][] = [
   ["#FF6B6B", "#FFD166"], // Red to Gold

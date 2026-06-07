@@ -1,224 +1,305 @@
-"use client"
+"use client";
 
-import { Share2, Copy, CheckCircle2, Wallet } from "lucide-react"
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Progress } from "@/components/ui/progress"
-import type { UserBalance } from "@/types"
-import type { UserData } from "@/types"
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Share2, Copy, CheckCircle2, Users, TrendingUp, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useUser } from "@/contexts/user-context";
+import { createClient } from "@/utils/supabase/client";
+import { fadeUp, staggerContainer } from "@/lib/animations";
 
-export default function InvitePage(){
-  const [copied, setCopied] = useState<boolean>(false)
-  const [user, setUser] = useState<UserData | null>(null)
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
-  const [userBalance, setUserBalance] = useState<UserBalance>()
+const MAX_REFERRALS = 10;
+const TON_PER_REFERRAL = 0.01;
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://t.me/hexacoin_bot";
 
-  const referralCode: string = "LUXHEX2024"
-  const referralLink: string = `https://luxurygame.app/invite/${referralCode}`
+const HOW_IT_WORKS = [
+  { step: "1", title: "Share Your Link", desc: "Copy and share your unique referral link with friends", icon: "📤" },
+  { step: "2", title: "Friend Joins",    desc: "Your friend opens the app via your link",             icon: "👋" },
+  { step: "3", title: "Earn TON",        desc: `Get ${TON_PER_REFERRAL} TON per friend, up to ${MAX_REFERRALS * TON_PER_REFERRAL} TON`, icon: "💰" },
+  { step: "4", title: "Withdraw",        desc: "Withdraw your earned TON with 10+ referrals",        icon: "🏦" },
+];
 
-  // Check if user is logged in on component mount
+export default function InvitePage() {
+  const { user } = useUser();
+  const [copied, setCopied] = useState(false);
+  const [referralCount, setReferralCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const referralCode = user?.referral_code ?? "";
+  const referralLink = referralCode ? `${APP_URL}?start=${referralCode}` : "";
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("user")
-      if (storedUser) {
-        try {
-          const userData = JSON.parse(storedUser) as UserData
-          setUser(userData)
-          setIsLoggedIn(true)
-        //   setUserBalance({
-        //     ton: 0, // Default to 0 TON
-        //     hxco: userData.hxcoBalance || 0,
-        //   })
-        } catch (err: unknown) {
-          // Invalid stored data
-          console.error("Error parsing user data:", err instanceof Error ? err.message : String(err))
-        }
-      }
+    async function fetchReferrals() {
+      if (!user?.id) return;
+      const supabase = createClient();
+      const { count } = await supabase
+        .from("user_referrals")
+        .select("*", { count: "exact", head: true })
+        .eq("referrer_id", user.id);
+      setReferralCount(count ?? 0);
+      setIsLoading(false);
     }
-  }, [])
+    fetchReferrals();
+  }, [user?.id]);
 
-  const copyToClipboard = (): void => {
-    navigator.clipboard.writeText(referralLink)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const copyToClipboard = () => {
+    if (!referralLink) return;
+    navigator.clipboard.writeText(referralLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
-  // Calculate referral progress
-  const referralCount = user?.referrals || 0
-  const maxReferrals = 10
-  const referralProgress = Math.min((referralCount / maxReferrals) * 100, 100)
-  const tonEarned = Math.min(referralCount * 0.01, 0.1)
+  const shareOnTelegram = () => {
+    const text = encodeURIComponent(`🎮 Join me on Hexa Coin and earn crypto rewards!\n\n${referralLink}`);
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${text}`, "_blank");
+  };
+
+  const shareOnTwitter = () => {
+    const text = encodeURIComponent(`Join me on Hexa Coin and earn crypto rewards! ${referralLink}`);
+    window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
+  };
+
+  const progress = Math.min((referralCount / MAX_REFERRALS) * 100, 100);
+  const tonEarned = Math.min(referralCount * TON_PER_REFERRAL, MAX_REFERRALS * TON_PER_REFERRAL);
+  const RING_R = 32;
+  const RING_C = 2 * Math.PI * RING_R;
+  const ringOffset = RING_C * (1 - progress / 100);
 
   return (
-    <div className="container py-4 sm:py-8 px-4 sm:px-6">
-      <div className="flex flex-col items-center text-center mb-6 sm:mb-8">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-r from-cosmic-accent to-cosmic-highlight flex items-center justify-center mb-4">
-          <Share2 className="h-8 w-8 text-cosmic-text" />
+    <motion.div
+      className="px-4 py-6 max-w-lg mx-auto space-y-5"
+      variants={staggerContainer}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Hero */}
+      <motion.div variants={fadeUp} className="relative rounded-3xl overflow-hidden text-center py-8 px-5">
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(135deg,#1A1438,#0D0A22)",
+            border: "1px solid rgba(124,58,237,0.3)",
+          }}
+        />
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-52 h-28 bg-cosmic-accent/18 rounded-full blur-3xl -mt-8" />
         </div>
-        <h1 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cosmic-accent to-cosmic-highlight mb-2">
-          Invite Friends & Earn TON
-        </h1>
-        <p className="text-cosmic-muted max-w-md text-sm sm:text-base">
-          Share your referral link with friends and earn 0.01 TON for each friend who joins (up to 0.10 TON)
-        </p>
-      </div>
 
-      {/* Balance Card */}
-      <Card className="mb-6 sm:mb-8 border border-cosmic-accent/20 bg-cosmic-card/50 backdrop-blur-sm">
-        <CardHeader className="px-4 sm:px-6 pb-2 sm:pb-4">
-          <CardTitle className="text-cosmic-text text-lg sm:text-xl">Your Balance</CardTitle>
-          <CardDescription className="text-cosmic-muted text-sm">Current earnings from referrals</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cosmic-tertiary to-cosmic-tertiary flex items-center justify-center">
-                <Wallet className="h-5 w-5 text-cosmic-text" />
-              </div>
-              <div>
-                <p className="text-sm text-cosmic-muted">TON Earned</p>
-                <p className="font-bold text-cosmic-tertiary">{tonEarned.toFixed(2)} TON</p>
+        <div className="relative">
+          {/* Icon with rings */}
+          <div className="relative w-20 h-20 mx-auto mb-5">
+            <motion.div
+              className="absolute inset-0 rounded-2xl bg-cosmic-accent/20 pulse-ring"
+            />
+            <motion.div
+              className="absolute inset-0 rounded-2xl bg-cosmic-accent/12 pulse-ring-delay"
+            />
+            <div
+              className="relative w-20 h-20 rounded-2xl flex items-center justify-center"
+              style={{
+                background: "linear-gradient(135deg,#7C3AED,#A855F7)",
+                boxShadow: "0 0 28px rgba(124,58,237,0.6)",
+              }}
+            >
+              <Share2 className="h-8 w-8 text-white" />
+            </div>
+          </div>
+
+          <h1 className="text-2xl font-extrabold text-gradient mb-2">Invite Friends</h1>
+          <p className="text-sm text-cosmic-muted max-w-xs mx-auto leading-relaxed">
+            Earn {TON_PER_REFERRAL} TON for every friend who joins — up to {MAX_REFERRALS} referrals
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Stats */}
+      <motion.div variants={fadeUp}>
+        <div
+          className="relative rounded-2xl p-5 overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg,rgba(26,20,56,0.9),rgba(17,13,42,0.8))",
+            border: "1px solid rgba(124,58,237,0.22)",
+            boxShadow: "0 0 30px rgba(124,58,237,0.08)",
+          }}
+        >
+          <div className="flex items-center gap-5">
+            {/* SVG Progress ring */}
+            <div className="relative flex-shrink-0 w-[80px] h-[80px]">
+              <svg width="80" height="80" viewBox="0 0 80 80" className="-rotate-90">
+                <circle cx="40" cy="40" r={RING_R} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="5" />
+                <circle
+                  cx="40" cy="40" r={RING_R}
+                  fill="none"
+                  stroke="url(#inviteRingGrad)"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeDasharray={RING_C}
+                  strokeDashoffset={ringOffset}
+                  style={{ transition: "stroke-dashoffset 0.6s ease" }}
+                />
+                <defs>
+                  <linearGradient id="inviteRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%"   stopColor="#7C3AED" />
+                    <stop offset="100%" stopColor="#A855F7" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <motion.span
+                  key={referralCount}
+                  initial={{ scale: 0.7, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="text-xl font-extrabold text-cosmic-text leading-none"
+                >
+                  {isLoading ? "—" : referralCount}
+                </motion.span>
+                <span className="text-[9px] text-cosmic-muted">/{MAX_REFERRALS}</span>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cosmic-accent to-cosmic-highlight flex items-center justify-center">
-                <span className="text-sm font-bold text-cosmic-text">HX</span>
+
+            {/* Stats */}
+            <div className="flex-1 space-y-3">
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ background: "rgba(124,58,237,0.2)" }}
+                >
+                  <Users className="h-4 w-4 text-cosmic-accent" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-cosmic-muted">Total Referrals</p>
+                  <p className="text-base font-extrabold text-cosmic-text leading-none">
+                    {isLoading ? "…" : `${referralCount} friend${referralCount !== 1 ? "s" : ""}`}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-cosmic-muted">HXCO Balance</p>
-                {/* <p className="font-bold text-cosmic-accent">{userBalance.hxco} HXCO</p> */}
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ background: "rgba(6,182,212,0.2)" }}
+                >
+                  <TrendingUp className="h-4 w-4 text-cosmic-tertiary" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-cosmic-muted">TON Earned</p>
+                  <p className="text-base font-extrabold text-gradient-cyan leading-none">
+                    {tonEarned.toFixed(2)} TON
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Referral Progress */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-cosmic-muted">Referral Progress</span>
-              <span className="text-cosmic-accent">
-                {referralCount}/{maxReferrals}
-              </span>
-            </div>
-            <Progress value={referralProgress} className="h-2" />
-            <p className="text-xs text-cosmic-muted">
-              {referralCount >= maxReferrals
-                ? "You've reached the maximum referral bonus!"
-                : `Invite ${maxReferrals - referralCount} more friends to earn maximum TON`}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+          {referralCount >= MAX_REFERRALS && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 flex items-center justify-center gap-2 py-2.5 rounded-xl"
+              style={{ background: "rgba(16,185,129,0.15)", border: "1px solid rgba(16,185,129,0.3)" }}
+            >
+              <span className="text-sm font-bold text-emerald-400">🎉 Maximum bonus reached!</span>
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
 
-      {/* Referral Link Card */}
-      <Card className="mb-6 sm:mb-8 border border-cosmic-accent/20 bg-cosmic-card/50 backdrop-blur-sm">
-        <CardHeader className="px-4 sm:px-6 pb-2 sm:pb-4">
-          <CardTitle className="text-cosmic-text text-lg sm:text-xl">Your Referral Link</CardTitle>
-          <CardDescription className="text-cosmic-muted text-sm">
-            Share this link with your friends to earn rewards
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row gap-2">
+      {/* Referral link */}
+      <motion.div variants={fadeUp}>
+        <div
+          className="rounded-2xl p-5"
+          style={{
+            background: "linear-gradient(135deg,rgba(26,20,56,0.9),rgba(17,13,42,0.8))",
+            border: "1px solid rgba(124,58,237,0.22)",
+          }}
+        >
+          <h2 className="text-sm font-extrabold text-cosmic-text mb-1">Your Referral Link</h2>
+          <p className="text-xs text-cosmic-muted mb-4">Share this link to earn TON rewards</p>
+
+          <div className="flex gap-2 mb-3">
             <Input
-              value={referralLink}
+              value={referralLink || "Loading your link…"}
               readOnly
-              className="bg-cosmic-bg border-cosmic-accent/20 text-cosmic-muted mb-2 sm:mb-0"
+              className="bg-cosmic-bg/80 border-cosmic-accent/20 text-cosmic-muted text-xs h-10"
             />
             <Button
               onClick={copyToClipboard}
-              className="bg-gradient-to-r from-cosmic-accent to-cosmic-highlight hover:from-cosmic-accent hover:to-cosmic-highlight text-cosmic-text sm:w-auto"
+              size="sm"
+              className="h-10 px-3 flex-shrink-0 border-0"
+              style={{
+                background: copied
+                  ? "linear-gradient(135deg,#10B981,#34D399)"
+                  : "linear-gradient(135deg,rgba(124,58,237,0.3),rgba(124,58,237,0.2))",
+                border: "1px solid rgba(124,58,237,0.35)",
+                boxShadow: "0 0 10px rgba(124,58,237,0.2)",
+              }}
             >
-              {copied ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              {copied
+                ? <CheckCircle2 className="h-4 w-4 text-white" />
+                : <Copy className="h-4 w-4 text-cosmic-accent" />}
             </Button>
           </div>
-        </CardContent>
-        <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 px-4 sm:px-6 pt-0 pb-4 sm:pb-6">
-          <Button
-            variant="outline"
-            className="border-cosmic-accent/20 text-cosmic-muted hover:bg-cosmic-accent/10 hover:text-cosmic-text w-full sm:w-auto"
-            onClick={() =>
-              window.open(
-                "https://twitter.com/intent/tweet?text=" +
-                  encodeURIComponent(`Join me on Luxury Game App and earn crypto rewards! ${referralLink}`),
-                "_blank",
-              )
-            }
-          >
-            Share on Twitter
-          </Button>
-          <Button
-            variant="outline"
-            className="border-cosmic-accent/20 text-cosmic-muted hover:bg-cosmic-accent/10 hover:text-cosmic-text w-full sm:w-auto"
-            onClick={() =>
-              window.open(
-                `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent("Join me on Luxury Game App and earn crypto rewards!")}`,
-                "_blank",
-              )
-            }
-          >
-            Share on Telegram
-          </Button>
-        </CardFooter>
-      </Card>
 
-      {/* How It Works Card - Added for mobile */}
-      <Card className="border border-cosmic-accent/20 bg-cosmic-card/50 backdrop-blur-sm">
-        <CardHeader className="px-4 sm:px-6 pb-2 sm:pb-4">
-          <CardTitle className="text-cosmic-text text-lg sm:text-xl">How It Works</CardTitle>
-          <CardDescription className="text-cosmic-muted text-sm">
-            Follow these steps to earn TON through referrals
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-4 sm:px-6">
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-cosmic-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-bold text-cosmic-accent">1</span>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-cosmic-text">Share Your Link</h3>
-                <p className="text-xs text-cosmic-muted">Copy your unique referral link and share it with friends</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-cosmic-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-bold text-cosmic-accent">2</span>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-cosmic-text">Friends Sign Up</h3>
-                <p className="text-xs text-cosmic-muted">When your friends sign up using your link, you get credit</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-cosmic-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-bold text-cosmic-accent">3</span>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-cosmic-text">Earn Rewards</h3>
-                <p className="text-xs text-cosmic-muted">
-                  Earn 0.01 TON for each friend who joins, up to 0.10 TON total
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-cosmic-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-bold text-cosmic-accent">4</span>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-cosmic-text">Withdraw TON</h3>
-                <p className="text-xs text-cosmic-muted">
-                  Once you have 10 referrals, you can withdraw your earned TON
-                </p>
-              </div>
-            </div>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={shareOnTelegram}
+              className="h-10 text-xs font-bold border-cosmic-accent/20 text-cosmic-muted hover:text-white hover:bg-cosmic-accent/12"
+            >
+              <Send className="h-3.5 w-3.5 mr-1.5 text-cosmic-tertiary" />
+              Telegram
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={shareOnTwitter}
+              className="h-10 text-xs font-bold border-cosmic-accent/20 text-cosmic-muted hover:text-white hover:bg-cosmic-accent/12"
+            >
+              <Share2 className="h-3.5 w-3.5 mr-1.5 text-cosmic-highlight" />
+              Twitter / X
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
+        </div>
+      </motion.div>
+
+      {/* How it works */}
+      <motion.div variants={fadeUp}>
+        <div
+          className="rounded-2xl p-5"
+          style={{
+            background: "linear-gradient(135deg,rgba(26,20,56,0.9),rgba(17,13,42,0.8))",
+            border: "1px solid rgba(124,58,237,0.18)",
+          }}
+        >
+          <h2 className="text-sm font-extrabold text-cosmic-text mb-4">How It Works</h2>
+          <div className="space-y-3.5">
+            {HOW_IT_WORKS.map((item, i) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 * i }}
+                className="flex items-start gap-3"
+              >
+                <div
+                  className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base"
+                  style={{
+                    background: "linear-gradient(135deg,rgba(124,58,237,0.22),rgba(124,58,237,0.1))",
+                    border: "1px solid rgba(124,58,237,0.25)",
+                  }}
+                >
+                  {item.icon}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-cosmic-text leading-tight">{item.title}</p>
+                  <p className="text-xs text-cosmic-muted mt-0.5 leading-snug">{item.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
 }

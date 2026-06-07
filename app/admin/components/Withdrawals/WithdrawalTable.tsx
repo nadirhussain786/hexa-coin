@@ -102,10 +102,10 @@ export function WithdrawalTable({
                 <TableCell>
                   <div>
                     <p className="font-medium text-cosmic-text">
-                      {`${withdrawal.users.first_name} ${withdrawal.users.last_name}`}
+                      {`${withdrawal.users?.first_name ?? ""} ${withdrawal.users?.last_name ?? ""}`.trim() || "Unknown"}
                     </p>
                     <p className="text-xs text-cosmic-muted">
-                      {withdrawal.users.email}
+                      {withdrawal.users?.email ?? "—"}
                     </p>
                   </div>
                 </TableCell>

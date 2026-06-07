@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import { luxuryGradients } from "@/constants/game-constants"
 import { Diamond } from "lucide-react"
-import type { Hexagon } from "@/types/game-types"
+import type { Hexagon } from "@/types"
 
 interface HexagonGridProps {
   hexagons: Hexagon[]

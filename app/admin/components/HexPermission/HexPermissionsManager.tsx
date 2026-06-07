@@ -7,6 +7,7 @@ import { HexPermissionDialog } from "./HexPermissionDialog";
 import { HexPermission } from "@/types";
 import { updateHexPermission } from "../../actions/updateHexPermission";
 import { updateHexPermissionStatus } from "../../actions/updateHexPermissionStatus";
+import { deleteHexPermission } from "../../actions/deleteHexPermission";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -29,21 +30,18 @@ export default function HexPermissionsManager({ hexPermissions }: Props) {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    // Show confirmation dialog
-    if (window.confirm("Are you sure you want to delete this permission?")) {
-      setIsLoading(true);
-
-      // Simulate API call
-      setTimeout(() => {
-        setPermissions(permissions.filter((p) => p.id !== id));
-        setIsLoading(false);
-
-        toast({
-          title: "Permission Deleted",
-          description: "The hex permission has been successfully deleted.",
-        });
-      }, 500);
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this permission?")) return;
+    setIsLoading(true);
+    try {
+      const res = await deleteHexPermission(id);
+      if (!res.success) throw new Error("Delete failed");
+      setPermissions((prev) => prev.filter((p) => p.id !== id));
+      toast({ title: "Permission Deleted", description: "The hex permission has been deleted." });
+    } catch {
+      toast({ title: "Error", description: "Could not delete permission.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
     }
   };
 

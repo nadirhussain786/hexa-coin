@@ -1,8 +1,9 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import type { UserBalance } from "@/types";
 
-export async function getUserBalanceById(userId: string) {
+export async function getUserBalanceById(userId: string): Promise<UserBalance | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -11,10 +12,7 @@ export async function getUserBalanceById(userId: string) {
     .eq("user_id", userId)
     .single();
 
-  if (error) {
-    console.error("Error fetching user balance:", error);
-    return { success: false, error };
-  }
+  if (error || !data) return null;
 
-  return { success: true, data };
+  return data as UserBalance;
 }

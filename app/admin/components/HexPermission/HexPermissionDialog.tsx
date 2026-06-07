@@ -78,7 +78,7 @@ export function HexPermissionDialog({ isOpen, setIsOpen, permission, onSave, isL
       ton_cost?: string
     } = {}
 
-    if (!formData.name.trim()) {
+    if (!formData.name?.trim()) {
       newErrors.name = "Name is required"
     }
 

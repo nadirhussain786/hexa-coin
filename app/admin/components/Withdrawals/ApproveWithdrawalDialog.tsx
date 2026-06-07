@@ -44,7 +44,7 @@ export function ApproveWithdrawalDialog({
         <div className="space-y-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <div className="text-right text-cosmic-muted text-sm">User:</div>
-            <div className="col-span-3 text-cosmic-text">{`${selectedWithdrawal?.users.first_name} ${selectedWithdrawal?.users.last_name}`}</div>
+            <div className="col-span-3 text-cosmic-text">{`${selectedWithdrawal?.users?.first_name ?? ""} ${selectedWithdrawal?.users?.last_name ?? ""}`.trim() || "Unknown"}</div>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <div className="text-right text-cosmic-muted text-sm">Amount:</div>
